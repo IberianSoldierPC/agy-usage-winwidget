@@ -1,24 +1,17 @@
 # agy-usage-winwidget
 
+[![Descargas](https://img.shields.io/github/downloads/IberianSoldierPC/agy-usage-winwidget/total?label=descargas&color=4285F4)](https://github.com/IberianSoldierPC/agy-usage-winwidget/releases)
+[![Última versión](https://img.shields.io/github/v/release/IberianSoldierPC/agy-usage-winwidget?label=versi%C3%B3n&color=34A853)](https://github.com/IberianSoldierPC/agy-usage-winwidget/releases/latest)
+[![Licencia: MIT](https://img.shields.io/github/license/IberianSoldierPC/agy-usage-winwidget?label=licencia&color=F4A259)](LICENSE)
+![Windows](https://img.shields.io/badge/plataforma-Windows%2010%2F11-0078D4?logo=windows&logoColor=white)
+
 Una pequeña ventana flotante e icono en la bandeja del sistema (System Tray) para Windows que muestra tu cuota semanal de [Google Antigravity](https://antigravity.google): los mismos números que `/usage` en la CLI de Antigravity, actualizados automáticamente cada dos minutos.
 
-```
-┌──────────────────────────────────────┐
-│ ⬡ USO DE ANTIGRAVITY     🔄  ▾ — ✕ │
-│                                      │
-│ MODELOS GEMINI           Flash, Pro  │
-│ 7%                                   │
-│ ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
-│ se reinicia en 6d 23h                │
-│                                      │
-│ MODELOS CLAUDE Y GPT   Opus,Son,GPT  │
-│ 100%                                 │
-│ ███████████████████████████████████  │
-│ límite alcanzado · se reinicia en 6d │
-│                                      │
-│ Antigravity                  21:35   │
-└──────────────────────────────────────┘
-```
+<p align="center">
+  <img src="docs/widget-es.png" alt="Vista compacta: barras de uso de Gemini y de Claude y GPT con la cuenta atrás del reinicio" width="330">
+  &nbsp;&nbsp;
+  <img src="docs/widget-es-expanded.png" alt="Vista desplegada: detalles de cada grupo, gráfico de uso de 24 horas y versión" width="330">
+</p>
 
 [English](README.md) · **Español**
 
@@ -32,8 +25,8 @@ Una pequeña ventana flotante e icono en la bandeja del sistema (System Tray) pa
 - 📊 **Dos barras de progreso**: Modelos Gemini (Flash, Pro) y Modelos Claude y GPT (Opus, Sonnet, GPT-OSS), cada uno con su porcentaje de uso y cuenta regresiva de reinicio.
 - 🎨 **Colores dinámicos**: verde → amarillo → rojo conforme aumenta el uso y supera los umbrales configurables.
 - ⬡ **Icono hexagonal en la bandeja**: muestra el porcentaje más crítico de un vistazo.
-- 📈 **Gráfico de historial**: despliega el panel de detalles para ver la evolución del uso en las últimas 24 horas.
-- 🌐 **Soporte multilingüe**: español (`es`) e inglés (`en`), con detección automática de idioma (`auto`).
+- 📈 **Gráfico de historial**: despliega el panel de detalles para ver la evolución del uso en las últimas 24 horas. El historial se guarda en disco, así que no se pierde al reiniciar.
+- 🌐 **Español e inglés**: cambia al instante con el botón **ES / EN** de la cabecera, o elige *Automático* en el menú de la bandeja para seguir el idioma de Windows.
 - 🔄 **Actualización automática**: consulta `agy -p "/usage"` en segundo plano cada 2 minutos (configurable).
 - 💾 **Posición persistente**: recuerda en qué lugar de la pantalla colocaste la ventana.
 - 🔍 **Zoom con la rueda del ratón**: rueda hacia arriba o abajo para escalar el tamaño de la ventana.
@@ -70,7 +63,8 @@ Win + R → shell:startup → pegar el acceso directo
 | **— Minimizar** | Ocultar a la bandeja del sistema |
 | **✕ Cerrar** | Salir del widget |
 | **Clic izq. en bandeja** | Mostrar u ocultar la ventana |
-| **Clic der. en bandeja** | Menú contextual (Mostrar, Actualizar, Salir) |
+| **ES / EN** | Cambiar el idioma de la interfaz al instante |
+| **Clic der. en bandeja** | Menú contextual (Mostrar, Actualizar, Idioma, Salir) |
 
 ## Configuración
 

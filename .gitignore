@@ -1,4 +1,5 @@
-# Runtime / state
+# Runtime / state (personal: window position, language, scale...)
+config.json
 widget-error.log
 usage-history.json
 

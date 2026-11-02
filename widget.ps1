@@ -13,7 +13,7 @@ Add-Type -Namespace Win32 -Name IconUtil -MemberDefinition @'
     public static extern bool DestroyIcon(System.IntPtr hIcon);
 '@
 
-$WidgetVersion = '1.0.2'
+$WidgetVersion = '1.0.3'
 $script:Dot    = [char]0x00B7
 
 $script:Root       = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -92,11 +92,13 @@ function Save-Config($cfg) {
 }
 
 $script:Cfg = Load-Config
+# First run: write the defaults so config.json exists and can be edited by hand
+if (-not (Test-Path $script:ConfigPath)) { Save-Config $script:Cfg }
 
 # ================================================================ I18N ====
 
 $script:I18nPath = Join-Path $script:Root 'i18n.json'
-$Languages = [ordered]@{ es = "Esp$([char]0x00F1)ol"; en = 'English' }
+$Languages = [ordered]@{ es = "Espa$([char]0x00F1)ol"; en = 'English' }
 
 function Load-Strings {
     if (Test-Path $script:I18nPath) {
@@ -138,9 +140,12 @@ function Load-Strings {
             'tip.toggle'      = 'Details'
             'tip.hide'        = 'Minimize to tray'
             'tip.exit'        = 'Exit'
+            'tip.lang'        = 'Language: English (click to switch)'
             'menu.toggle'     = 'Show / Hide'
             'menu.refresh'    = 'Refresh Now'
             'menu.exit'       = 'Exit'
+            'menu.language'   = 'Language'
+            'menu.langAuto'   = 'Automatic (system)'
             'tray.title'      = 'Antigravity Usage'
             'tray.line'       = '{0}: {1}% used ({2}% left)'
             'err.noAgy'       = "Cannot find 'agy' in PATH. Make sure Antigravity CLI is installed."
@@ -208,8 +213,44 @@ $script:UsageAt    = [datetime]::MinValue
 $script:UsageTry   = [datetime]::MinValue
 $script:UsageDesc  = ''
 
-# History: an array of @{ time; gemini; thirdp } samples
-$script:History    = [System.Collections.ArrayList]@()
+# History: an array of @{ time; gemini; thirdp } samples, persisted to
+# usage-history.json so the 24-hour chart survives restarts.
+$script:History     = [System.Collections.ArrayList]@()
+$script:HistoryPath = Join-Path $script:Root 'usage-history.json'
+
+function Load-History {
+    if (-not (Test-Path $script:HistoryPath)) { return }
+    try {
+        $raw = [System.IO.File]::ReadAllText($script:HistoryPath, [System.Text.Encoding]::UTF8)
+        $cutoff = (Get-Date).AddHours(-24)
+        # Assign first: in PS 5.1 piping a JSON array yields it as ONE object
+        $parsed = ConvertFrom-Json -InputObject $raw
+        foreach ($s in $parsed) {
+            $t = [datetime]::Parse([string]$s.time, [System.Globalization.CultureInfo]::InvariantCulture,
+                                   [System.Globalization.DateTimeStyles]::RoundtripKind).ToLocalTime()
+            if ($t -lt $cutoff) { continue }
+            $sample = @{ time = $t }
+            if ($null -ne $s.gemini) { $sample.gemini = [double]$s.gemini }
+            if ($null -ne $s.thirdp) { $sample.thirdp = [double]$s.thirdp }
+            [void]$script:History.Add($sample)
+        }
+    } catch {}
+}
+
+function Save-History {
+    try {
+        $out = foreach ($s in $script:History) {
+            $o = [ordered]@{ time = $s.time.ToUniversalTime().ToString('o') }
+            if ($s.ContainsKey('gemini')) { $o.gemini = $s.gemini }
+            if ($s.ContainsKey('thirdp')) { $o.thirdp = $s.thirdp }
+            [PSCustomObject]$o
+        }
+        $json = ConvertTo-Json -InputObject @($out) -Compress
+        [System.IO.File]::WriteAllText($script:HistoryPath, $json, (New-Object System.Text.UTF8Encoding $false))
+    } catch {}
+}
+
+Load-History
 
 function Start-UsageProbe {
     if ($script:UsageProc -and -not $script:UsageProc.HasExited) { return }
@@ -283,6 +324,7 @@ function Collect-UsageProbe {
     while ($script:History.Count -gt 0 -and $script:History[0].time -lt $cutoff) {
         $script:History.RemoveAt(0)
     }
+    Save-History
 }
 
 # ================================================================ FORMAT ====
@@ -303,7 +345,7 @@ $reader = New-Object System.Xml.XmlNodeReader $xaml
 $win    = [Windows.Markup.XamlReader]::Load($reader)
 
 $UI = @{}
-foreach ($n in @('BtnRefresh','BtnToggle','BtnHide','BtnExit',
+foreach ($n in @('BtnLang','LblLang','BtnRefresh','BtnToggle','BtnHide','BtnExit',
                  'LblTitle','LblGemini','LblThird','LblGeminiGroup','LblThirdGroup','LblHist',
                  'GeminiPct','GeminiDesc','BarGemini','GeminiReset',
                  'ThirdPct','ThirdDesc','BarThird','ThirdReset',
@@ -327,6 +369,8 @@ function Update-Texts {
     if ($UI.BtnToggle)      { $UI.BtnToggle.ToolTip   = T 'tip.toggle' }
     if ($UI.BtnHide)        { $UI.BtnHide.ToolTip     = T 'tip.hide' }
     if ($UI.BtnExit)        { $UI.BtnExit.ToolTip     = T 'tip.exit' }
+    if ($UI.LblLang)        { $UI.LblLang.Text        = (Get-Lang).ToUpper() }
+    if ($UI.BtnLang)        { $UI.BtnLang.ToolTip     = T 'tip.lang' }
 }
 
 $win.Opacity = [double]$script:Cfg.opacity
@@ -704,6 +748,22 @@ $itemShow.add_Click({ if ($win.IsVisible) { $win.Hide() } else { $win.Show(); $w
 $itemRefresh = $trayMenu.Items.Add((T 'menu.refresh'))
 $itemRefresh.add_Click({ $script:UsageTry = [datetime]::MinValue; Update-Widget })
 $trayMenu.Items.Add('-')
+
+# Language submenu: Auto + every language in $Languages
+$itemLang = New-Object System.Windows.Forms.ToolStripMenuItem
+$trayMenu.Items.Add($itemLang) | Out-Null
+$script:LangItems = [ordered]@{}
+foreach ($code in @('auto') + @($Languages.Keys)) {
+    $sub = New-Object System.Windows.Forms.ToolStripMenuItem
+    $sub.Tag = $code
+    $sub.add_Click({
+        param($s, $e)
+        Set-Language ([string]$s.Tag)
+    })
+    $itemLang.DropDownItems.Add($sub) | Out-Null
+    $script:LangItems[$code] = $sub
+}
+$trayMenu.Items.Add('-')
 $itemExit = $trayMenu.Items.Add((T 'menu.exit'))
 $itemExit.add_Click({
     try { $script:Cfg.left = [math]::Round($win.Left); $script:Cfg.top = [math]::Round($win.Top); Save-Config $script:Cfg } catch {}
@@ -713,6 +773,44 @@ $itemExit.add_Click({
     [System.Windows.Threading.Dispatcher]::CurrentDispatcher.InvokeShutdown()
 })
 $notify.ContextMenuStrip = $trayMenu
+
+function Update-MenuTexts {
+    $itemShow.Text    = T 'menu.toggle'
+    $itemRefresh.Text = T 'menu.refresh'
+    $itemLang.Text    = T 'menu.language'
+    $itemExit.Text    = T 'menu.exit'
+    $current = [string]$script:Cfg.language
+    if ([string]::IsNullOrEmpty($current)) { $current = 'auto' }
+    foreach ($code in $script:LangItems.Keys) {
+        $sub = $script:LangItems[$code]
+        if ($code -eq 'auto') { $sub.Text = T 'menu.langAuto' } else { $sub.Text = $Languages[$code] }
+        $sub.Checked = ($code -eq $current.ToLower())
+    }
+}
+
+function Set-Language([string]$code) {
+    $script:Cfg.language = $code
+    Save-Config $script:Cfg
+    Update-Texts
+    Update-MenuTexts
+    try { Update-Widget } catch {}
+}
+
+Update-MenuTexts
+
+# Header language pill: click cycles through the available languages
+$UI.BtnLang.add_MouseLeftButtonDown({
+    param($s, $e)
+    $e.Handled = $true
+    $codes = @($Languages.Keys)
+    $i = [array]::IndexOf($codes, (Get-Lang))
+    Set-Language $codes[($i + 1) % $codes.Count]
+})
+$UI.BtnLang.add_MouseEnter({ $UI.LblLang.Foreground = [Windows.Media.Brushes]::White; $UI.BtnLang.BorderBrush = $UI.LblLang.Foreground })
+$UI.BtnLang.add_MouseLeave({
+    $UI.LblLang.Foreground = (New-Object Windows.Media.BrushConverter).ConvertFromString('#FF8494AB')
+    $UI.BtnLang.BorderBrush = (New-Object Windows.Media.BrushConverter).ConvertFromString('#40FFFFFF')
+})
 
 # Mouse wheel to resize
 $border.add_MouseWheel({

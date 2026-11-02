@@ -1,26 +1,19 @@
 # agy-usage-winwidget
 
+[![Downloads](https://img.shields.io/github/downloads/IberianSoldierPC/agy-usage-winwidget/total?label=downloads&color=4285F4)](https://github.com/IberianSoldierPC/agy-usage-winwidget/releases)
+[![Latest release](https://img.shields.io/github/v/release/IberianSoldierPC/agy-usage-winwidget?color=34A853)](https://github.com/IberianSoldierPC/agy-usage-winwidget/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/IberianSoldierPC/agy-usage-winwidget?color=F4A259)](LICENSE)
+![Windows](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?logo=windows&logoColor=white)
+
 A tiny floating window + tray icon for Windows that shows your
 [Google Antigravity](https://antigravity.google) weekly quota — the same numbers
 as `/usage` inside the Antigravity CLI, refreshed automatically every two minutes.
 
-```
-┌──────────────────────────────────────┐
-│ ⬡ ANTIGRAVITY USAGE      🔄  ▾ — ✕ │
-│                                      │
-│ GEMINI MODELS            Flash, Pro  │
-│ 7%                                   │
-│ ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
-│ resets in 6d 23h                     │
-│                                      │
-│ CLAUDE & GPT MODELS    Opus,Son,GPT  │
-│ 100%                                 │
-│ ███████████████████████████████████  │
-│ limit reached · resets in 6d 23h     │
-│                                      │
-│ Antigravity                  21:25   │
-└──────────────────────────────────────┘
-```
+<p align="center">
+  <img src="docs/widget-en.png" alt="Compact view: Gemini and Claude &amp; GPT usage bars with reset countdowns" width="330">
+  &nbsp;&nbsp;
+  <img src="docs/widget-en-expanded.png" alt="Expanded view: group details, 24-hour usage chart and version" width="330">
+</p>
 
 **English** · [Español](README.es.md)
 
@@ -40,7 +33,9 @@ as `/usage` inside the Antigravity CLI, refreshed automatically every two minute
   thresholds.
 - ⬡ **Hexagonal tray icon** — shows the lowest remaining percentage at a glance.
 - 📈 **History chart** — expand the details panel to see usage over the last 24
-  hours as line graphs.
+  hours as line graphs. The history is saved to disk, so it survives restarts.
+- 🌐 **English & Spanish** — switch instantly with the **EN / ES** button in the
+  header, or pick *Automatic* from the tray menu to follow your Windows language.
 - 🔄 **Auto-refresh** — queries `agy -p "/usage"` every 2 minutes (configurable).
 - 💾 **Persistent position** — remembers where you dragged the window.
 - 🔍 **Mouse-wheel zoom** — scroll to scale the whole widget up or down.
@@ -80,7 +75,8 @@ Win+R → shell:startup → paste the shortcut
 | **— Minimize** | Hide to system tray |
 | **✕ Close** | Exit the widget |
 | **Left-click tray icon** | Show / hide the window |
-| **Right-click tray icon** | Context menu (Show, Refresh, Exit) |
+| **ES / EN** | Switch the interface language instantly |
+| **Right-click tray icon** | Context menu (Show, Refresh, Language, Exit) |
 
 ## Configuration
 
