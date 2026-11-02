@@ -1,0 +1,134 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="AGY Usage" WindowStyle="None" AllowsTransparency="True"
+        Background="Transparent" ShowInTaskbar="False" Topmost="False"
+        SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+  <Border CornerRadius="10" Background="#FF0F172A" BorderBrush="#33FFFFFF"
+          BorderThickness="1" Padding="12,10,12,11" Width="272">
+    <Border.Effect>
+      <DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.55" Color="Black"/>
+    </Border.Effect>
+    <StackPanel>
+
+      <!-- Header -->
+      <Grid Margin="0,0,0,6">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <TextBlock Text="⬡" FontSize="11" Foreground="#FF38BDF8" Margin="0,0,5,0"
+                     VerticalAlignment="Center"/>
+          <TextBlock Text="ANTIGRAVITY USAGE" FontFamily="Segoe UI" FontSize="9.5"
+                     FontWeight="SemiBold" Foreground="#FF8494AB" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+          <TextBlock x:Name="BtnRefresh" Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                     Foreground="#FF8494AB" Margin="0,0,10,0" VerticalAlignment="Center" Cursor="Hand"
+                     Background="Transparent" ToolTip="Refresh now"/>
+          <TextBlock x:Name="BtnToggle" Text="&#x25BE;" FontSize="11" Foreground="#FF8494AB"
+                     Margin="0,0,9,0" Cursor="Hand" ToolTip="Details"/>
+          <TextBlock x:Name="BtnHide" Text="&#x2013;" FontSize="13" Foreground="#FF8494AB"
+                     Margin="0,0,9,0" Cursor="Hand" ToolTip="Minimize to tray"/>
+          <TextBlock x:Name="BtnExit" Text="&#x2715;" FontSize="11" Foreground="#FF8494AB"
+                     Cursor="Hand" ToolTip="Exit"/>
+        </StackPanel>
+      </Grid>
+
+      <!-- Gemini Models section -->
+      <TextBlock Text="GEMINI MODELS" FontFamily="Segoe UI" FontSize="9"
+                 FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,2,0,3"/>
+      <Grid Margin="0,0,0,4">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+          <TextBlock x:Name="GeminiPct" Text="--" FontFamily="Segoe UI" FontSize="28"
+                     FontWeight="Light" Foreground="White"/>
+          <TextBlock Text="%" FontFamily="Segoe UI" FontSize="13"
+                     Foreground="#FF8494AB" Margin="2,0,0,6" VerticalAlignment="Bottom"/>
+        </StackPanel>
+        <TextBlock x:Name="GeminiDesc" Grid.Column="1" Text="" FontFamily="Segoe UI"
+                   FontSize="9" Foreground="#FF64748B" HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom" Margin="0,0,0,5" TextAlignment="Right"/>
+      </Grid>
+      <Border Background="#26FFFFFF" CornerRadius="3" Height="6" Margin="0,0,0,3">
+        <Border x:Name="BarGemini" HorizontalAlignment="Left" CornerRadius="3"
+                Background="#FF4ADE80" Width="0"/>
+      </Border>
+      <TextBlock x:Name="GeminiReset" Text="loading..." FontFamily="Segoe UI" FontSize="10.5"
+                 Foreground="#FFCBD5E1" Margin="0,0,0,10"/>
+
+      <!-- Claude/GPT Models section -->
+      <TextBlock Text="CLAUDE &amp; GPT MODELS" FontFamily="Segoe UI" FontSize="9"
+                 FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,3"/>
+      <Grid Margin="0,0,0,4">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+          <TextBlock x:Name="ThirdPct" Text="--" FontFamily="Segoe UI" FontSize="28"
+                     FontWeight="Light" Foreground="White"/>
+          <TextBlock Text="%" FontFamily="Segoe UI" FontSize="13"
+                     Foreground="#FF8494AB" Margin="2,0,0,6" VerticalAlignment="Bottom"/>
+        </StackPanel>
+        <TextBlock x:Name="ThirdDesc" Grid.Column="1" Text="" FontFamily="Segoe UI"
+                   FontSize="9" Foreground="#FF64748B" HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom" Margin="0,0,0,5" TextAlignment="Right"/>
+      </Grid>
+      <Border Background="#26FFFFFF" CornerRadius="3" Height="6" Margin="0,0,0,3">
+        <Border x:Name="BarThird" HorizontalAlignment="Left" CornerRadius="3"
+                Background="#FF60A5FA" Width="0"/>
+      </Border>
+      <TextBlock x:Name="ThirdReset" Text="loading..." FontFamily="Segoe UI" FontSize="10.5"
+                 Foreground="#FFCBD5E1" Margin="0,0,0,4"/>
+
+      <!-- Details panel (expandable) -->
+      <StackPanel x:Name="Details" Visibility="Collapsed" Margin="0,8,0,0">
+        <Border Background="#1AFFFFFF" Height="1" Margin="0,0,0,8"/>
+
+        <!-- Overall description -->
+        <TextBlock x:Name="LineDescription" Text="" FontFamily="Segoe UI" FontSize="10"
+                   Foreground="#FF94A3B8" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+        <!-- Gemini group detail -->
+        <TextBlock Text="GEMINI GROUP" FontFamily="Segoe UI" FontSize="9"
+                   FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,3"/>
+        <TextBlock x:Name="GeminiModels" Text="" FontFamily="Segoe UI" FontSize="10"
+                   Foreground="#FFCBD5E1" TextWrapping="Wrap" Margin="0,0,0,2"/>
+        <TextBlock x:Name="GeminiBucketDesc" Text="" FontFamily="Segoe UI" FontSize="10"
+                   Foreground="#FF8494AB" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+        <!-- 3P group detail -->
+        <TextBlock Text="CLAUDE &amp; GPT GROUP" FontFamily="Segoe UI" FontSize="9"
+                   FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,3"/>
+        <TextBlock x:Name="ThirdModels" Text="" FontFamily="Segoe UI" FontSize="10"
+                   Foreground="#FFCBD5E1" TextWrapping="Wrap" Margin="0,0,0,2"/>
+        <TextBlock x:Name="ThirdBucketDesc" Text="" FontFamily="Segoe UI" FontSize="10"
+                   Foreground="#FF8494AB" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+        <!-- History chart -->
+        <Border Background="#1AFFFFFF" Height="1" Margin="0,0,0,8"/>
+        <TextBlock Text="USAGE · 24 HOURS" FontFamily="Segoe UI" FontSize="9"
+                   FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,4"/>
+        <Canvas x:Name="HistChart" Height="44" Background="Transparent" ClipToBounds="True"/>
+        <TextBlock x:Name="HistCaption" Text="" FontFamily="Segoe UI" FontSize="10"
+                   Foreground="#FF8494AB" Margin="0,2,0,10" TextTrimming="CharacterEllipsis"/>
+
+        <Border Background="#1AFFFFFF" Height="1" Margin="0,0,0,7"/>
+        <TextBlock x:Name="LineVersion" Text="" FontFamily="Segoe UI" FontSize="10"
+                   Foreground="#FF8494AB" TextWrapping="Wrap"/>
+      </StackPanel>
+
+      <!-- Footer -->
+      <Grid Margin="0,7,0,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="LineAccount" Text="" FontFamily="Segoe UI" FontSize="9"
+                   Foreground="#FF475569" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+        <TextBlock x:Name="LineStamp" Grid.Column="1" Text="" FontFamily="Segoe UI" FontSize="9"
+                   Foreground="#FF475569"/>
+      </Grid>
+    </StackPanel>
+  </Border>
+</Window>

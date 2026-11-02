@@ -1,0 +1,15 @@
+# Runtime / state
+widget-error.log
+usage-history.json
+
+# Temp files
+*.tmp
+
+# Editor backups
+*.bak
+*~
+
+# OS junk
+Thumbs.db
+Desktop.ini
+.DS_Store
