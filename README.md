@@ -1,9 +1,17 @@
-# agy-usage-winwidget
+<h1 align="center">agy-usage-winwidget</h1>
 
-[![Downloads](https://img.shields.io/github/downloads/IberianSoldierPC/agy-usage-winwidget/total?label=downloads&color=4285F4)](https://github.com/IberianSoldierPC/agy-usage-winwidget/releases)
-[![Latest release](https://img.shields.io/github/v/release/IberianSoldierPC/agy-usage-winwidget?color=34A853)](https://github.com/IberianSoldierPC/agy-usage-winwidget/releases/latest)
-[![License: MIT](https://img.shields.io/github/license/IberianSoldierPC/agy-usage-winwidget?color=F4A259)](LICENSE)
-![Windows](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?logo=windows&logoColor=white)
+<p align="center">
+  <a href="https://github.com/IberianSoldierPC/agy-usage-winwidget/releases">
+    <img src="https://img.shields.io/github/downloads/IberianSoldierPC/agy-usage-winwidget/total?label=downloads&color=4285F4" alt="Downloads">
+  </a>
+  <a href="https://github.com/IberianSoldierPC/agy-usage-winwidget/releases/latest">
+    <img src="https://img.shields.io/github/v/release/IberianSoldierPC/agy-usage-winwidget?color=34A853" alt="Latest release">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/github/license/IberianSoldierPC/agy-usage-winwidget?color=F4A259" alt="License: MIT">
+  </a>
+  <img src="https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4?logo=windows&logoColor=white" alt="Windows">
+</p>
 
 A tiny floating window + tray icon for Windows that shows your
 [Google Antigravity](https://antigravity.google) weekly quota — the same numbers
@@ -11,7 +19,9 @@ as `/usage` inside the Antigravity CLI, refreshed automatically every two minute
 
 <p align="center">
   <img src="docs/widget-en.png" alt="Compact view: Gemini and Claude &amp; GPT usage bars with reset countdowns" width="330">
-  &nbsp;&nbsp;
+</p>
+
+<p align="center">
   <img src="docs/widget-en-expanded.png" alt="Expanded view: group details, 24-hour usage chart and version" width="330">
 </p>
 
