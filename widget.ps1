@@ -13,7 +13,7 @@ Add-Type -Namespace Win32 -Name IconUtil -MemberDefinition @'
     public static extern bool DestroyIcon(System.IntPtr hIcon);
 '@
 
-$WidgetVersion = '1.0.1'
+$WidgetVersion = '1.0.2'
 $script:Dot    = [char]0x00B7
 
 $script:Root       = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -95,72 +95,60 @@ $script:Cfg = Load-Config
 
 # ================================================================ I18N ====
 
-$Languages = [ordered]@{ es = 'Español'; en = 'English' }
+$script:I18nPath = Join-Path $script:Root 'i18n.json'
+$Languages = [ordered]@{ es = "Esp$([char]0x00F1)ol"; en = 'English' }
 
-$Strings = @{
-    en = @{
-        'title'           = 'ANTIGRAVITY USAGE'
-        'lbl.gemini'      = 'GEMINI MODELS'
-        'lbl.third'       = 'CLAUDE & GPT MODELS'
-        'lbl.geminiGroup' = 'GEMINI GROUP'
-        'lbl.thirdGroup'  = 'CLAUDE & GPT GROUP'
-        'lbl.hist'        = "USAGE $script:Dot 24 HOURS"
-        'desc.gemini'     = 'Flash, Pro'
-        'desc.third'      = 'Opus, Sonnet, GPT'
-        'loading'         = 'loading...'
-        'resetsIn'        = 'resets in {0}'
-        'limitReached'    = 'limit reached'
-        'limitReachedIn'  = "limit reached $script:Dot resets in {0}"
-        'used'            = '{0}% used'
-        'left'            = '{0}% left'
-        'hist.collecting' = 'Collecting data...'
-        'hist.caption'    = '{0} samples'
-        'span.d'          = '{0}d {1}h'
-        'span.h'          = '{0}h {1}m'
-        'span.m'          = '{0}m'
-        'tip.refresh'     = 'Refresh now'
-        'tip.toggle'      = 'Details'
-        'tip.hide'        = 'Minimize to tray'
-        'tip.exit'        = 'Exit'
-        'menu.toggle'     = 'Show / Hide'
-        'menu.refresh'    = 'Refresh Now'
-        'menu.exit'       = 'Exit'
-        'tray.title'      = 'Antigravity Usage'
-        'tray.line'       = '{0}: {1}% used ({2}% left)'
-        'err.noAgy'       = "Cannot find 'agy' in PATH. Make sure Antigravity CLI is installed."
+function Load-Strings {
+    if (Test-Path $script:I18nPath) {
+        try {
+            $raw = [System.IO.File]::ReadAllText($script:I18nPath, [System.Text.Encoding]::UTF8)
+            $parsed = $raw | ConvertFrom-Json
+            $dict = @{}
+            foreach ($lang in $parsed.PSObject.Properties) {
+                $dict[$lang.Name] = @{}
+                foreach ($prop in $lang.Value.PSObject.Properties) {
+                    $dict[$lang.Name][$prop.Name] = [string]$prop.Value
+                }
+            }
+            return $dict
+        } catch {}
     }
-    es = @{
-        'title'           = 'USO DE ANTIGRAVITY'
-        'lbl.gemini'      = 'MODELOS GEMINI'
-        'lbl.third'       = 'MODELOS CLAUDE Y GPT'
-        'lbl.geminiGroup' = 'GRUPO GEMINI'
-        'lbl.thirdGroup'  = 'GRUPO CLAUDE Y GPT'
-        'lbl.hist'        = "USO $script:Dot 24 HORAS"
-        'desc.gemini'     = 'Flash, Pro'
-        'desc.third'      = 'Opus, Sonnet, GPT'
-        'loading'         = 'cargando...'
-        'resetsIn'        = 'se reinicia en {0}'
-        'limitReached'    = 'límite alcanzado'
-        'limitReachedIn'  = "límite alcanzado $script:Dot se reinicia en {0}"
-        'used'            = '{0}% usado'
-        'left'            = '{0}% restante'
-        'hist.collecting' = 'Recopilando datos...'
-        'hist.caption'    = '{0} muestras'
-        'span.d'          = '{0}d {1}h'
-        'span.h'          = '{0}h {1}m'
-        'span.m'          = '{0}m'
-        'tip.refresh'     = 'Actualizar ahora'
-        'tip.toggle'      = 'Detalles'
-        'tip.hide'        = 'Minimizar a la bandeja'
-        'tip.exit'        = 'Salir'
-        'menu.toggle'     = 'Mostrar / Ocultar'
-        'menu.refresh'    = 'Actualizar ahora'
-        'menu.exit'       = 'Salir'
-        'tray.title'      = 'Uso de Antigravity'
-        'tray.line'       = '{0}: {1}% usado ({2}% restante)'
-        'err.noAgy'       = "No se encontró 'agy' en el PATH. Asegúrate de tener instalado Antigravity CLI."
+    return @{
+        en = @{
+            'title'           = 'ANTIGRAVITY USAGE'
+            'lbl.gemini'      = 'GEMINI MODELS'
+            'lbl.third'       = 'CLAUDE & GPT MODELS'
+            'lbl.geminiGroup' = 'GEMINI GROUP'
+            'lbl.thirdGroup'  = 'CLAUDE & GPT GROUP'
+            'lbl.hist'        = "USAGE $script:Dot 24 HOURS"
+            'desc.gemini'     = 'Flash, Pro'
+            'desc.third'      = 'Opus, Sonnet, GPT'
+            'loading'         = 'loading...'
+            'resetsIn'        = 'resets in {0}'
+            'limitReached'    = 'limit reached'
+            'limitReachedIn'  = "limit reached $script:Dot resets in {0}"
+            'used'            = '{0}% used'
+            'left'            = '{0}% left'
+            'hist.collecting' = 'Collecting data...'
+            'hist.caption'    = '{0} samples'
+            'span.d'          = '{0}d {1}h'
+            'span.h'          = '{0}h {1}m'
+            'span.m'          = '{0}m'
+            'tip.refresh'     = 'Refresh now'
+            'tip.toggle'      = 'Details'
+            'tip.hide'        = 'Minimize to tray'
+            'tip.exit'        = 'Exit'
+            'menu.toggle'     = 'Show / Hide'
+            'menu.refresh'    = 'Refresh Now'
+            'menu.exit'       = 'Exit'
+            'tray.title'      = 'Antigravity Usage'
+            'tray.line'       = '{0}: {1}% used ({2}% left)'
+            'err.noAgy'       = "Cannot find 'agy' in PATH. Make sure Antigravity CLI is installed."
+        }
     }
 }
+
+$Strings = Load-Strings
 
 function Get-Lang {
     $l = [string]$script:Cfg.language
@@ -177,10 +165,13 @@ function Get-Lang {
 
 function T([string]$key, $default = $key) {
     $lang = Get-Lang
-    $s = $Strings[$lang][$key]
-    if ($null -eq $s) { $s = $Strings.en[$key] }
-    if ($null -eq $s) { return $default }
-    return $s
+    if ($Strings.ContainsKey($lang) -and $Strings[$lang].ContainsKey($key)) {
+        return $Strings[$lang][$key]
+    }
+    if ($Strings.ContainsKey('en') -and $Strings.en.ContainsKey($key)) {
+        return $Strings.en[$key]
+    }
+    return $default
 }
 
 # ================================================================ PALETTE ====

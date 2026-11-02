@@ -13,7 +13,7 @@
       <!-- Header -->
       <Grid Margin="0,0,0,6">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-          <TextBlock Text="⬡" FontSize="11" Foreground="#FF38BDF8" Margin="0,0,5,0"
+          <TextBlock Text="&#x2B21;" FontSize="11" Foreground="#FF38BDF8" Margin="0,0,5,0"
                      VerticalAlignment="Center"/>
           <TextBlock x:Name="LblTitle" Text="ANTIGRAVITY USAGE" FontFamily="Segoe UI" FontSize="9.5"
                      FontWeight="SemiBold" Foreground="#FF8494AB" VerticalAlignment="Center"/>
