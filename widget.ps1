@@ -56,6 +56,7 @@ $DefaultConfig = [ordered]@{
     warnPercent          = 60
     critPercent          = 85
     showRemaining        = $false # false: shows % used (fills up); true: shows % remaining
+    language             = 'es'   # 'es', 'en' or 'auto'
     opacity              = 1.0
     topmost              = $false
     left                 = $null
@@ -92,6 +93,96 @@ function Save-Config($cfg) {
 
 $script:Cfg = Load-Config
 
+# ================================================================ I18N ====
+
+$Languages = [ordered]@{ es = 'Español'; en = 'English' }
+
+$Strings = @{
+    en = @{
+        'title'           = 'ANTIGRAVITY USAGE'
+        'lbl.gemini'      = 'GEMINI MODELS'
+        'lbl.third'       = 'CLAUDE & GPT MODELS'
+        'lbl.geminiGroup' = 'GEMINI GROUP'
+        'lbl.thirdGroup'  = 'CLAUDE & GPT GROUP'
+        'lbl.hist'        = "USAGE $script:Dot 24 HOURS"
+        'desc.gemini'     = 'Flash, Pro'
+        'desc.third'      = 'Opus, Sonnet, GPT'
+        'loading'         = 'loading...'
+        'resetsIn'        = 'resets in {0}'
+        'limitReached'    = 'limit reached'
+        'limitReachedIn'  = "limit reached $script:Dot resets in {0}"
+        'used'            = '{0}% used'
+        'left'            = '{0}% left'
+        'hist.collecting' = 'Collecting data...'
+        'hist.caption'    = '{0} samples'
+        'span.d'          = '{0}d {1}h'
+        'span.h'          = '{0}h {1}m'
+        'span.m'          = '{0}m'
+        'tip.refresh'     = 'Refresh now'
+        'tip.toggle'      = 'Details'
+        'tip.hide'        = 'Minimize to tray'
+        'tip.exit'        = 'Exit'
+        'menu.toggle'     = 'Show / Hide'
+        'menu.refresh'    = 'Refresh Now'
+        'menu.exit'       = 'Exit'
+        'tray.title'      = 'Antigravity Usage'
+        'tray.line'       = '{0}: {1}% used ({2}% left)'
+        'err.noAgy'       = "Cannot find 'agy' in PATH. Make sure Antigravity CLI is installed."
+    }
+    es = @{
+        'title'           = 'USO DE ANTIGRAVITY'
+        'lbl.gemini'      = 'MODELOS GEMINI'
+        'lbl.third'       = 'MODELOS CLAUDE Y GPT'
+        'lbl.geminiGroup' = 'GRUPO GEMINI'
+        'lbl.thirdGroup'  = 'GRUPO CLAUDE Y GPT'
+        'lbl.hist'        = "USO $script:Dot 24 HORAS"
+        'desc.gemini'     = 'Flash, Pro'
+        'desc.third'      = 'Opus, Sonnet, GPT'
+        'loading'         = 'cargando...'
+        'resetsIn'        = 'se reinicia en {0}'
+        'limitReached'    = 'límite alcanzado'
+        'limitReachedIn'  = "límite alcanzado $script:Dot se reinicia en {0}"
+        'used'            = '{0}% usado'
+        'left'            = '{0}% restante'
+        'hist.collecting' = 'Recopilando datos...'
+        'hist.caption'    = '{0} muestras'
+        'span.d'          = '{0}d {1}h'
+        'span.h'          = '{0}h {1}m'
+        'span.m'          = '{0}m'
+        'tip.refresh'     = 'Actualizar ahora'
+        'tip.toggle'      = 'Detalles'
+        'tip.hide'        = 'Minimizar a la bandeja'
+        'tip.exit'        = 'Salir'
+        'menu.toggle'     = 'Mostrar / Ocultar'
+        'menu.refresh'    = 'Actualizar ahora'
+        'menu.exit'       = 'Salir'
+        'tray.title'      = 'Uso de Antigravity'
+        'tray.line'       = '{0}: {1}% usado ({2}% restante)'
+        'err.noAgy'       = "No se encontró 'agy' en el PATH. Asegúrate de tener instalado Antigravity CLI."
+    }
+}
+
+function Get-Lang {
+    $l = [string]$script:Cfg.language
+    if ($l -eq 'auto' -or [string]::IsNullOrEmpty($l)) {
+        try {
+            $ui = [System.Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName.ToLower()
+            if ($Strings.ContainsKey($ui)) { return $ui }
+        } catch {}
+        return 'es'
+    }
+    if ($Strings.ContainsKey($l.ToLower())) { return $l.ToLower() }
+    return 'es'
+}
+
+function T([string]$key, $default = $key) {
+    $lang = Get-Lang
+    $s = $Strings[$lang][$key]
+    if ($null -eq $s) { $s = $Strings.en[$key] }
+    if ($null -eq $s) { return $default }
+    return $s
+}
+
 # ================================================================ PALETTE ====
 
 $Palette = @{
@@ -113,7 +204,7 @@ function Get-Level([double]$pct) {
 $script:AgyExe     = $null
 try { $script:AgyExe = (Get-Command agy -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source } catch {
     [System.Windows.MessageBox]::Show(
-        "Cannot find 'agy' in PATH. Make sure Antigravity CLI is installed.",
+        (T 'err.noAgy'),
         'agy-usage-winwidget', 'OK', 'Error') | Out-Null
     exit 1
 }
@@ -208,9 +299,9 @@ function Collect-UsageProbe {
 function Format-Span([datetime]$endUtc) {
     $span = $endUtc.ToUniversalTime() - [datetime]::UtcNow
     if ($span.TotalSeconds -le 0) { return $null }
-    if ($span.TotalHours -ge 24) { return '{0}d {1}h' -f $span.Days, $span.Hours }
-    if ($span.TotalHours -ge 1)  { return '{0}h {1}m' -f [math]::Floor($span.TotalHours), $span.Minutes }
-    return '{0}m' -f $span.Minutes
+    if ($span.TotalHours -ge 24) { return ((T 'span.d') -f $span.Days, $span.Hours) }
+    if ($span.TotalHours -ge 1)  { return ((T 'span.h') -f [math]::Floor($span.TotalHours), $span.Minutes) }
+    return ((T 'span.m') -f $span.Minutes)
 }
 
 # ================================================================ WINDOW ====
@@ -222,6 +313,7 @@ $win    = [Windows.Markup.XamlReader]::Load($reader)
 
 $UI = @{}
 foreach ($n in @('BtnRefresh','BtnToggle','BtnHide','BtnExit',
+                 'LblTitle','LblGemini','LblThird','LblGeminiGroup','LblThirdGroup','LblHist',
                  'GeminiPct','GeminiDesc','BarGemini','GeminiReset',
                  'ThirdPct','ThirdDesc','BarThird','ThirdReset',
                  'Details','LineDescription','GeminiModels','GeminiBucketDesc',
@@ -229,6 +321,21 @@ foreach ($n in @('BtnRefresh','BtnToggle','BtnHide','BtnExit',
                  'HistChart','HistCaption','LineVersion',
                  'LineAccount','LineStamp')) {
     $UI[$n] = $win.FindName($n)
+}
+
+function Update-Texts {
+    if ($UI.LblTitle)       { $UI.LblTitle.Text       = T 'title' }
+    if ($UI.LblGemini)      { $UI.LblGemini.Text      = T 'lbl.gemini' }
+    if ($UI.LblThird)       { $UI.LblThird.Text       = T 'lbl.third' }
+    if ($UI.LblGeminiGroup) { $UI.LblGeminiGroup.Text = T 'lbl.geminiGroup' }
+    if ($UI.LblThirdGroup)  { $UI.LblThirdGroup.Text  = T 'lbl.thirdGroup' }
+    if ($UI.LblHist)        { $UI.LblHist.Text        = T 'lbl.hist' }
+    if ($UI.GeminiDesc)     { $UI.GeminiDesc.Text     = T 'desc.gemini' }
+    if ($UI.ThirdDesc)      { $UI.ThirdDesc.Text      = T 'desc.third' }
+    if ($UI.BtnRefresh)     { $UI.BtnRefresh.ToolTip  = T 'tip.refresh' }
+    if ($UI.BtnToggle)      { $UI.BtnToggle.ToolTip   = T 'tip.toggle' }
+    if ($UI.BtnHide)        { $UI.BtnHide.ToolTip     = T 'tip.hide' }
+    if ($UI.BtnExit)        { $UI.BtnExit.ToolTip     = T 'tip.exit' }
 }
 
 $win.Opacity = [double]$script:Cfg.opacity
@@ -300,13 +407,13 @@ function Set-TrayIcon([string]$text, [System.Drawing.Color]$color) {
 }
 
 function Update-TrayTooltip {
-    $lines = @('Antigravity Usage')
+    $lines = @(T 'tray.title')
     if ($script:Usage) {
         foreach ($g in $script:Usage.groups) {
             foreach ($b in $g.buckets) {
                 $pctRemaining = [math]::Round($b.remaining_fraction * 100)
                 $pctUsed      = 100 - $pctRemaining
-                $lines += "$($g.name): ${pctUsed}% used (${pctRemaining}% left)"
+                $lines += ((T 'tray.line') -f $g.name, $pctUsed, $pctRemaining)
             }
         }
     }
@@ -320,7 +427,7 @@ function Update-TrayTooltip {
 function Draw-HistChart {
     $UI.HistChart.Children.Clear()
     if ($script:History.Count -lt 2) {
-        $UI.HistCaption.Text = 'Collecting data...'
+        $UI.HistCaption.Text = T 'hist.collecting'
         return
     }
 
@@ -363,7 +470,8 @@ function Draw-HistChart {
     $parts = @()
     if ($null -ne $latest.gemini) { $parts += "Gemini: $($latest.gemini)%" }
     if ($null -ne $latest.thirdp) { $parts += "Claude/GPT: $($latest.thirdp)%" }
-    $UI.HistCaption.Text = ($parts -join " $script:Dot ") + " $script:Dot $count samples"
+    $countStr = ((T 'hist.caption') -f $count)
+    $UI.HistCaption.Text = ($parts -join " $script:Dot ") + " $script:Dot $countStr"
 }
 
 # ================================================================ UPDATE ====
@@ -437,16 +545,16 @@ function Update-Widget {
             } catch {}
         }
         if ($geminiUsed -ge 100) {
-            $UI.GeminiReset.Text = if ($resetSpan) { "limit reached $script:Dot resets in $resetSpan" } else { "limit reached" }
+            $UI.GeminiReset.Text = if ($resetSpan) { ((T 'limitReachedIn') -f $resetSpan) } else { (T 'limitReached') }
         } elseif ($resetSpan) {
-            $UI.GeminiReset.Text = "resets in $resetSpan"
+            $UI.GeminiReset.Text = ((T 'resetsIn') -f $resetSpan)
         } else {
-            $UI.GeminiReset.Text = if ($useRemaining) { "${geminiRemaining}% left" } else { "${geminiUsed}% used" }
+            $UI.GeminiReset.Text = if ($useRemaining) { ((T 'left') -f $geminiRemaining) } else { ((T 'used') -f $geminiUsed) }
         }
-        $UI.GeminiDesc.Text = "Flash, Pro"
+        $UI.GeminiDesc.Text = T 'desc.gemini'
     } else {
         $UI.GeminiPct.Text  = '--'
-        $UI.GeminiReset.Text = 'loading...'
+        $UI.GeminiReset.Text = T 'loading'
     }
 
     # Third-party (Claude & GPT)
@@ -466,16 +574,16 @@ function Update-Widget {
             } catch {}
         }
         if ($thirdUsed -ge 100) {
-            $UI.ThirdReset.Text = if ($resetSpan) { "limit reached $script:Dot resets in $resetSpan" } else { "limit reached" }
+            $UI.ThirdReset.Text = if ($resetSpan) { ((T 'limitReachedIn') -f $resetSpan) } else { (T 'limitReached') }
         } elseif ($resetSpan) {
-            $UI.ThirdReset.Text = "resets in $resetSpan"
+            $UI.ThirdReset.Text = ((T 'resetsIn') -f $resetSpan)
         } else {
-            $UI.ThirdReset.Text = if ($useRemaining) { "${thirdRemaining}% left" } else { "${thirdUsed}% used" }
+            $UI.ThirdReset.Text = if ($useRemaining) { ((T 'left') -f $thirdRemaining) } else { ((T 'used') -f $thirdUsed) }
         }
-        $UI.ThirdDesc.Text = "Opus, Sonnet, GPT"
+        $UI.ThirdDesc.Text = T 'desc.third'
     } else {
         $UI.ThirdPct.Text  = '--'
-        $UI.ThirdReset.Text = 'loading...'
+        $UI.ThirdReset.Text = T 'loading'
     }
 
     # Tray icon: show primary bottleneck (highest usage in default mode, lowest remaining in remaining mode)
@@ -600,12 +708,12 @@ $notify.add_MouseClick({
 
 # Right-click tray menu
 $trayMenu = New-Object System.Windows.Forms.ContextMenuStrip
-$itemShow = $trayMenu.Items.Add('Show / Hide')
+$itemShow = $trayMenu.Items.Add((T 'menu.toggle'))
 $itemShow.add_Click({ if ($win.IsVisible) { $win.Hide() } else { $win.Show(); $win.Activate() } })
-$itemRefresh = $trayMenu.Items.Add('Refresh Now')
+$itemRefresh = $trayMenu.Items.Add((T 'menu.refresh'))
 $itemRefresh.add_Click({ $script:UsageTry = [datetime]::MinValue; Update-Widget })
 $trayMenu.Items.Add('-')
-$itemExit = $trayMenu.Items.Add('Exit')
+$itemExit = $trayMenu.Items.Add((T 'menu.exit'))
 $itemExit.add_Click({
     try { $script:Cfg.left = [math]::Round($win.Left); $script:Cfg.top = [math]::Round($win.Top); Save-Config $script:Cfg } catch {}
     $notify.Visible = $false; $notify.Dispose()
@@ -640,6 +748,7 @@ if ($script:Cfg.expanded) {
     } catch {}
 })
 
+Update-Texts
 $win.Show()
 Update-Widget
 

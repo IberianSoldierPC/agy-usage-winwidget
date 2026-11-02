@@ -15,7 +15,7 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
           <TextBlock Text="⬡" FontSize="11" Foreground="#FF38BDF8" Margin="0,0,5,0"
                      VerticalAlignment="Center"/>
-          <TextBlock Text="ANTIGRAVITY USAGE" FontFamily="Segoe UI" FontSize="9.5"
+          <TextBlock x:Name="LblTitle" Text="ANTIGRAVITY USAGE" FontFamily="Segoe UI" FontSize="9.5"
                      FontWeight="SemiBold" Foreground="#FF8494AB" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -32,7 +32,7 @@
       </Grid>
 
       <!-- Gemini Models section -->
-      <TextBlock Text="GEMINI MODELS" FontFamily="Segoe UI" FontSize="9"
+      <TextBlock x:Name="LblGemini" Text="GEMINI MODELS" FontFamily="Segoe UI" FontSize="9"
                  FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,2,0,3"/>
       <Grid Margin="0,0,0,4">
         <Grid.ColumnDefinitions>
@@ -57,7 +57,7 @@
                  Foreground="#FFCBD5E1" Margin="0,0,0,10"/>
 
       <!-- Claude/GPT Models section -->
-      <TextBlock Text="CLAUDE &amp; GPT MODELS" FontFamily="Segoe UI" FontSize="9"
+      <TextBlock x:Name="LblThird" Text="CLAUDE &amp; GPT MODELS" FontFamily="Segoe UI" FontSize="9"
                  FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,3"/>
       <Grid Margin="0,0,0,4">
         <Grid.ColumnDefinitions>
@@ -90,7 +90,7 @@
                    Foreground="#FF94A3B8" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
         <!-- Gemini group detail -->
-        <TextBlock Text="GEMINI GROUP" FontFamily="Segoe UI" FontSize="9"
+        <TextBlock x:Name="LblGeminiGroup" Text="GEMINI GROUP" FontFamily="Segoe UI" FontSize="9"
                    FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,3"/>
         <TextBlock x:Name="GeminiModels" Text="" FontFamily="Segoe UI" FontSize="10"
                    Foreground="#FFCBD5E1" TextWrapping="Wrap" Margin="0,0,0,2"/>
@@ -98,7 +98,7 @@
                    Foreground="#FF8494AB" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
         <!-- 3P group detail -->
-        <TextBlock Text="CLAUDE &amp; GPT GROUP" FontFamily="Segoe UI" FontSize="9"
+        <TextBlock x:Name="LblThirdGroup" Text="CLAUDE &amp; GPT GROUP" FontFamily="Segoe UI" FontSize="9"
                    FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,3"/>
         <TextBlock x:Name="ThirdModels" Text="" FontFamily="Segoe UI" FontSize="10"
                    Foreground="#FFCBD5E1" TextWrapping="Wrap" Margin="0,0,0,2"/>
@@ -107,7 +107,7 @@
 
         <!-- History chart -->
         <Border Background="#1AFFFFFF" Height="1" Margin="0,0,0,8"/>
-        <TextBlock Text="USAGE &#x00B7; 24 HOURS" FontFamily="Segoe UI" FontSize="9"
+        <TextBlock x:Name="LblHist" Text="USAGE &#x00B7; 24 HOURS" FontFamily="Segoe UI" FontSize="9"
                    FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,4"/>
         <Canvas x:Name="HistChart" Height="44" Background="Transparent" ClipToBounds="True"/>
         <TextBlock x:Name="HistCaption" Text="" FontFamily="Segoe UI" FontSize="10"

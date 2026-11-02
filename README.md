@@ -22,6 +22,8 @@ as `/usage` inside the Antigravity CLI, refreshed automatically every two minute
 └──────────────────────────────────────┘
 ```
 
+**English** · [Español](README.es.md)
+
 > **Based on [Enhed/clawd-usage-winwidget](https://github.com/Enhed/clawd-usage-winwidget)**
 > by [Venger Sergey](https://github.com/Enhed) — a wonderful Claude Code usage
 > widget that inspired the architecture, UI design, and many patterns used here.
@@ -92,6 +94,7 @@ Edit `config.json` next to `widget.ps1`:
 | `warnPercent` | `60` | Yellow threshold (% **used**) |
 | `critPercent` | `85` | Red threshold (% **used**) |
 | `showRemaining` | `false` | If `true`, shows % remaining instead of % used |
+| `language` | `"es"` | UI language (`"es"`, `"en"`, or `"auto"`) |
 | `opacity` | `1.0` | Window opacity (0.0–1.0) |
 | `topmost` | `false` | Keep the window above all others |
 
