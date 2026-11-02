@@ -107,7 +107,7 @@
 
         <!-- History chart -->
         <Border Background="#1AFFFFFF" Height="1" Margin="0,0,0,8"/>
-        <TextBlock Text="USAGE · 24 HOURS" FontFamily="Segoe UI" FontSize="9"
+        <TextBlock Text="USAGE &#x00B7; 24 HOURS" FontFamily="Segoe UI" FontSize="9"
                    FontWeight="SemiBold" Foreground="#FF64748B" Margin="0,0,0,4"/>
         <Canvas x:Name="HistChart" Height="44" Background="Transparent" ClipToBounds="True"/>
         <TextBlock x:Name="HistCaption" Text="" FontFamily="Segoe UI" FontSize="10"

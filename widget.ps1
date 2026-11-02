@@ -13,7 +13,8 @@ Add-Type -Namespace Win32 -Name IconUtil -MemberDefinition @'
     public static extern bool DestroyIcon(System.IntPtr hIcon);
 '@
 
-$WidgetVersion = '1.0.0'
+$WidgetVersion = '1.0.1'
+$script:Dot    = [char]0x00B7
 
 $script:Root       = Split-Path -Parent $MyInvocation.MyCommand.Path
 $script:ConfigPath = Join-Path $script:Root 'config.json'
@@ -362,7 +363,7 @@ function Draw-HistChart {
     $parts = @()
     if ($null -ne $latest.gemini) { $parts += "Gemini: $($latest.gemini)%" }
     if ($null -ne $latest.thirdp) { $parts += "Claude/GPT: $($latest.thirdp)%" }
-    $UI.HistCaption.Text = ($parts -join ' · ') + " · $count samples"
+    $UI.HistCaption.Text = ($parts -join " $script:Dot ") + " $script:Dot $count samples"
 }
 
 # ================================================================ UPDATE ====
@@ -436,7 +437,7 @@ function Update-Widget {
             } catch {}
         }
         if ($geminiUsed -ge 100) {
-            $UI.GeminiReset.Text = if ($resetSpan) { "limit reached · resets in $resetSpan" } else { "limit reached" }
+            $UI.GeminiReset.Text = if ($resetSpan) { "limit reached $script:Dot resets in $resetSpan" } else { "limit reached" }
         } elseif ($resetSpan) {
             $UI.GeminiReset.Text = "resets in $resetSpan"
         } else {
@@ -465,7 +466,7 @@ function Update-Widget {
             } catch {}
         }
         if ($thirdUsed -ge 100) {
-            $UI.ThirdReset.Text = if ($resetSpan) { "limit reached · resets in $resetSpan" } else { "limit reached" }
+            $UI.ThirdReset.Text = if ($resetSpan) { "limit reached $script:Dot resets in $resetSpan" } else { "limit reached" }
         } elseif ($resetSpan) {
             $UI.ThirdReset.Text = "resets in $resetSpan"
         } else {
