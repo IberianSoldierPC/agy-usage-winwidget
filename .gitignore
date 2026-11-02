@@ -9,6 +9,9 @@ usage-history.json
 *.bak
 *~
 
+# Archives / releases
+*.zip
+
 # OS junk
 Thumbs.db
 Desktop.ini

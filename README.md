@@ -53,12 +53,13 @@ as `/usage` inside the Antigravity CLI, refreshed automatically every two minute
 [Antigravity CLI](https://antigravity.google) installed and logged in (`agy` on
 `PATH`).
 
-1. Download or clone this repo anywhere you like:
-   ```
-   git clone https://github.com/IberianSoldierPC/agy-usage-winwidget.git
-   ```
-2. Double-click **`start-widget.vbs`** — the widget appears in the corner of
-   your screen and in the system tray.
+- **Option A (Recommended):** Download the [**latest release ZIP**](https://github.com/IberianSoldierPC/agy-usage-winwidget/releases/latest) and extract it anywhere.
+- **Option B (Git):** Clone the repository:
+  ```powershell
+  git clone https://github.com/IberianSoldierPC/agy-usage-winwidget.git
+  ```
+
+Then double-click **`start-widget.vbs`** — the widget starts silently without a console window.
 
 ### Auto-start with Windows
 

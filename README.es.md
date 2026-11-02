@@ -43,11 +43,13 @@ Una pequeña ventana flotante e icono en la bandeja del sistema (System Tray) pa
 
 **Requisitos:** Windows 10 u 11 y la CLI de [Google Antigravity](https://antigravity.google) instalada e iniciada sesión (`agy` en el `PATH`).
 
-1. Descarga o clona este repositorio:
-   ```cmd
-   git clone https://github.com/IberianSoldierPC/agy-usage-winwidget.git
-   ```
-2. Haz doble clic en **`start-widget.vbs`** — el widget aparecerá en tu escritorio y en la bandeja del sistema.
+- **Opción A (Recomendada):** Descarga el archivo de la [**última versión (Release ZIP)**](https://github.com/IberianSoldierPC/agy-usage-winwidget/releases/latest) y descomprímelo donde prefieras.
+- **Opción B (Git):** Clona el repositorio:
+  ```cmd
+  git clone https://github.com/IberianSoldierPC/agy-usage-winwidget.git
+  ```
+
+Luego haz doble clic en **`start-widget.vbs`** — el widget se iniciará silenciosamente sin ventanas de consola.
 
 ### Inicio automático con Windows
 
