@@ -9,16 +9,16 @@ as `/usage` inside the Antigravity CLI, refreshed automatically every two minute
 │ ⬡ ANTIGRAVITY USAGE      🔄  ▾ — ✕ │
 │                                      │
 │ GEMINI MODELS            Flash, Pro  │
-│ 97%                                  │
-│ ████████████████████████████░░░░░░░  │
+│ 7%                                   │
+│ ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
 │ resets in 6d 23h                     │
 │                                      │
 │ CLAUDE & GPT MODELS    Opus,Son,GPT  │
-│ 77%                                  │
-│ ████████████████████░░░░░░░░░░░░░░░  │
-│ resets in 6d 23h                     │
+│ 100%                                 │
+│ ███████████████████████████████████  │
+│ limit reached · resets in 6d 23h     │
 │                                      │
-│ Antigravity                  21:05   │
+│ Antigravity                  21:25   │
 └──────────────────────────────────────┘
 ```
 
@@ -91,6 +91,7 @@ Edit `config.json` next to `widget.ps1`:
 | `scale` | `1.35` | Window scale factor |
 | `warnPercent` | `60` | Yellow threshold (% **used**) |
 | `critPercent` | `85` | Red threshold (% **used**) |
+| `showRemaining` | `false` | If `true`, shows % remaining instead of % used |
 | `opacity` | `1.0` | Window opacity (0.0–1.0) |
 | `topmost` | `false` | Keep the window above all others |
 

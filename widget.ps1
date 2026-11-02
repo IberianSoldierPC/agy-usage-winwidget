@@ -54,6 +54,7 @@ $DefaultConfig = [ordered]@{
     scale                = 1.35
     warnPercent          = 60
     critPercent          = 85
+    showRemaining        = $false # false: shows % used (fills up); true: shows % remaining
     opacity              = 1.0
     topmost              = $false
     left                 = $null
@@ -416,13 +417,16 @@ function Update-Widget {
         }
     }
 
+    $useRemaining = [bool]$script:Cfg.showRemaining
+
     # Gemini
     if ($null -ne $geminiUsed) {
-        $UI.GeminiPct.Text = [string]$geminiRemaining
+        $geminiDisplay = if ($useRemaining) { $geminiRemaining } else { $geminiUsed }
+        $UI.GeminiPct.Text = [string]$geminiDisplay
         $level = Get-Level $geminiUsed
         $UI.BarGemini.Background = New-Object System.Windows.Media.SolidColorBrush(
             [System.Windows.Media.ColorConverter]::ConvertFromString($Palette[$level].Wpf))
-        $UI.BarGemini.Width = [math]::Max(($geminiRemaining / 100.0) * $BarWidth, 0)
+        $UI.BarGemini.Width = [math]::Min([math]::Max(($geminiDisplay / 100.0) * $BarWidth, 0), $BarWidth)
 
         $resetSpan = $null
         if ($geminiReset) {
@@ -431,10 +435,12 @@ function Update-Widget {
                 $resetSpan = Format-Span $resetDt
             } catch {}
         }
-        if ($resetSpan) {
+        if ($geminiUsed -ge 100) {
+            $UI.GeminiReset.Text = if ($resetSpan) { "limit reached · resets in $resetSpan" } else { "limit reached" }
+        } elseif ($resetSpan) {
             $UI.GeminiReset.Text = "resets in $resetSpan"
         } else {
-            $UI.GeminiReset.Text = "${geminiRemaining}% remaining"
+            $UI.GeminiReset.Text = if ($useRemaining) { "${geminiRemaining}% left" } else { "${geminiUsed}% used" }
         }
         $UI.GeminiDesc.Text = "Flash, Pro"
     } else {
@@ -442,13 +448,14 @@ function Update-Widget {
         $UI.GeminiReset.Text = 'loading...'
     }
 
-    # Third-party
+    # Third-party (Claude & GPT)
     if ($null -ne $thirdUsed) {
-        $UI.ThirdPct.Text = [string]$thirdRemaining
+        $thirdDisplay = if ($useRemaining) { $thirdRemaining } else { $thirdUsed }
+        $UI.ThirdPct.Text = [string]$thirdDisplay
         $level = Get-Level $thirdUsed
         $UI.BarThird.Background = New-Object System.Windows.Media.SolidColorBrush(
             [System.Windows.Media.ColorConverter]::ConvertFromString($Palette[$level].Wpf))
-        $UI.BarThird.Width = [math]::Max(($thirdRemaining / 100.0) * $BarWidth, 0)
+        $UI.BarThird.Width = [math]::Min([math]::Max(($thirdDisplay / 100.0) * $BarWidth, 0), $BarWidth)
 
         $resetSpan = $null
         if ($thirdReset) {
@@ -457,10 +464,12 @@ function Update-Widget {
                 $resetSpan = Format-Span $resetDt
             } catch {}
         }
-        if ($resetSpan) {
+        if ($thirdUsed -ge 100) {
+            $UI.ThirdReset.Text = if ($resetSpan) { "limit reached · resets in $resetSpan" } else { "limit reached" }
+        } elseif ($resetSpan) {
             $UI.ThirdReset.Text = "resets in $resetSpan"
         } else {
-            $UI.ThirdReset.Text = "${thirdRemaining}% remaining"
+            $UI.ThirdReset.Text = if ($useRemaining) { "${thirdRemaining}% left" } else { "${thirdUsed}% used" }
         }
         $UI.ThirdDesc.Text = "Opus, Sonnet, GPT"
     } else {
@@ -468,19 +477,33 @@ function Update-Widget {
         $UI.ThirdReset.Text = 'loading...'
     }
 
-    # Tray icon: show the lowest remaining percentage
+    # Tray icon: show primary bottleneck (highest usage in default mode, lowest remaining in remaining mode)
     $trayPct  = '--'
     $trayLvl  = 'dead'
-    if ($null -ne $geminiRemaining -and $null -ne $thirdRemaining) {
-        $lowest = [math]::Min($geminiRemaining, $thirdRemaining)
-        $trayPct = [string]$lowest
-        $trayLvl = Get-Level (100 - $lowest)
-    } elseif ($null -ne $geminiRemaining) {
-        $trayPct = [string]$geminiRemaining
-        $trayLvl = Get-Level $geminiUsed
-    } elseif ($null -ne $thirdRemaining) {
-        $trayPct = [string]$thirdRemaining
-        $trayLvl = Get-Level $thirdUsed
+    if ($useRemaining) {
+        if ($null -ne $geminiRemaining -and $null -ne $thirdRemaining) {
+            $lowest = [math]::Min($geminiRemaining, $thirdRemaining)
+            $trayPct = [string]$lowest
+            $trayLvl = Get-Level (100 - $lowest)
+        } elseif ($null -ne $thirdRemaining) {
+            $trayPct = [string]$thirdRemaining
+            $trayLvl = Get-Level $thirdUsed
+        } elseif ($null -ne $geminiRemaining) {
+            $trayPct = [string]$geminiRemaining
+            $trayLvl = Get-Level $geminiUsed
+        }
+    } else {
+        if ($null -ne $geminiUsed -and $null -ne $thirdUsed) {
+            $highest = [math]::Max($geminiUsed, $thirdUsed)
+            $trayPct = [string]$highest
+            $trayLvl = Get-Level $highest
+        } elseif ($null -ne $thirdUsed) {
+            $trayPct = [string]$thirdUsed
+            $trayLvl = Get-Level $thirdUsed
+        } elseif ($null -ne $geminiUsed) {
+            $trayPct = [string]$geminiUsed
+            $trayLvl = Get-Level $geminiUsed
+        }
     }
     Set-TrayIcon $trayPct $Palette[$trayLvl].Drawing
     Update-TrayTooltip

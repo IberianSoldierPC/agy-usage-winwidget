@@ -1,12 +1,13 @@
-﻿{
-    "refreshSeconds":  10,
-    "usageIntervalSeconds":  120,
-    "expanded":  false,
-    "scale":  1.35,
-    "warnPercent":  60,
-    "critPercent":  85,
-    "opacity":  1.0,
-    "topmost":  false,
-    "left":  1550,
-    "top":  5
+{
+    "refreshSeconds": 10,
+    "usageIntervalSeconds": 120,
+    "expanded": false,
+    "scale": 1.35,
+    "warnPercent": 60,
+    "critPercent": 85,
+    "showRemaining": false,
+    "opacity": 1.0,
+    "topmost": false,
+    "left": 1550,
+    "top": 5
 }
